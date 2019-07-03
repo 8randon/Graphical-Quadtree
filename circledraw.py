@@ -7,6 +7,8 @@ Current Resources:
         * https://stackoverflow.com/questions/16527930/matplotlib-update-position-of-patches-or-set-xy-for-circles
         * https://stackoverflow.com/questions/47852102/drawing-circle-by-clicking-using-matplotlib
 
+Current state: adds circles
+
 @author: Brandon Townsend
 """
 
