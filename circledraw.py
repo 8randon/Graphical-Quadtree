@@ -6,6 +6,7 @@ Current Resources:
         * https://matplotlib.org/3.1.0/users/event_handling.html
         * https://stackoverflow.com/questions/16527930/matplotlib-update-position-of-patches-or-set-xy-for-circles
         * https://stackoverflow.com/questions/47852102/drawing-circle-by-clicking-using-matplotlib
+        * https://stackoverflow.com/questions/24943991/change-grid-interval-and-specify-tick-labels-in-matplotlib
 
 Current state: adds circles
 
@@ -13,6 +14,8 @@ Current state: adds circles
 """
 
 from matplotlib import pyplot as plt
+from matplotlib.ticker import MultipleLocator
+#import numpy as np
 #from graphics import *
 
 class CircleDrawer:
@@ -31,11 +34,13 @@ def onclick(event):
     print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % ('double' if event.dblclick else 'single', event.button, event.x, event.y, event.xdata, event.ydata))
 
 fig, ax = plt.subplots()
-ax.set_title('click to build line segments')
+ax.set_title('click to make circles')
 ax.set_xlim([-40, 40])
 ax.set_ylim([-40, 40])
 ax.set_aspect('equal')
-
+plt.grid()
+ax.xaxis.set_major_locator(MultipleLocator(1))
+ax.yaxis.set_major_locator(MultipleLocator(1))
 #linebuilder = LineBuilder(line)
 circledrawer = CircleDrawer(fig,ax)
 cid = fig.canvas.mpl_connect('button_press_event', onclick)
