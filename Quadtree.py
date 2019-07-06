@@ -15,6 +15,7 @@ File Contents:
 
 import math
 import numpy as np
+
 class AABB:
     
     def _init_(self, center, halfdimension):
@@ -41,10 +42,10 @@ class Node:
         self.radius = radius
         self.circcenter = circcenter
     
-    def calcPoints(circ):
+    def calcPoints(self, circ):
         circlepoints = list()
         
-        for i in range(len(circ): # for each circle
+        for i in range(len(circ)): # for each circle
             temp = circ[i].center*2*math.pi/self.circleRes
             numPoints = int(temp)
             angleInterval = int(180/temp)
