@@ -18,7 +18,7 @@ import numpy as np
 
 class AABB:
     
-    def _init_(self, center, halfdimension):
+    def __init__(self, center, halfdimension):
         
         self.center = center
         self.hd = halfdimension
@@ -30,43 +30,108 @@ class AABB:
 
 class Node:   
   ##### Might be wrong approach, probably cant handle overlapping shapes. Might rewrite for image processing.  
-    def _init_(self, radius, circcenter, center, dimension, root):
-        self.root = root # True or False
-        self.resolution = 1
-        self.circleRes = 0.2
+    def __init__(self, radius=None, circcenter=None, center=None, dimension=None, root=None, resolution=None, circleres=None):
+        
+    # _________DEFAULTS_________
+        if radius == None:
+            self.radius = 0
+        else:
+            self.radius = radius
+        if circcenter == None:
+            self.circcenter = (0,0)
+        else:
+            self.circcenter = circcenter
+        if center == None:
+            self.center = (0,0)
+        else:
+            self.center = center
+        if dimension == None:
+            self.dimension = 0
+        else:
+            self.dimension = dimension
+        if root == None: # True or False
+            self.root = False
+        else:
+            self.root = root
+        if resolution == None:
+            self.resolution = 1
+        else:
+            self.resolution = resolution
+        if circleres == None:
+            self.circleres = 0.2
+        else:
+            self.circleres = circleres
+        
         self.nw = None
         self.ne = None
         self.sw = None
         self.se = None
-        self.box = AABB(center, dimension/2)
-        self.radius = radius
-        self.circcenter = circcenter
+        self.box = AABB(self.center, (self.dimension/2))
     
+    # This method will only be called by the root node at the beginning of mapping
     def calcPoints(self, circ):
-        circlepoints = list()
-        
-        for i in range(len(circ)): # for each circle
-            temp = circ[i].center*2*math.pi/self.circleRes
-            numPoints = int(temp)
-            angleInterval = int(180/temp)
-            points = list()
-        
-            for i in range(numPoints): #find all points on perimeter of circle within circle resolution
-                points.append((circ[i].center[0]+circ[i].radius/math.cos(angleInterval), circ[i].center[1]+circ[i].radius/math.sin(angleInterval)))
-                angleInterval += angleInterval
-                
-            circlepoints.append(points) # add points to total list of circle points
+        cp = list() #circle points
+        val = list()
+        xy = list()
+        print circ[0].center
+ 
+        for i in range(len(circ)): # For each circle...
+            temp = circ[i].radius*2*math.pi/self.circleres
+            numPoints = int(temp) # The number of points in the circle
+            angleInterval = 360/temp # Angular interval between points
+            curAngle = 0.0000001 # Counter to keep track of current angle
+            points = list() # A temporary list of points
+            val =  range(len(circ))
+            print val
             
-            # this should remove the points in the union of the current and previous circles
-            if i>0:
-                for j in range(len(circlepoints[i])): #see if points in this circle are in the prev circle
-                    if (circlepoints[i][j][0] - circlepoints[i-1][j][0])**2 + (circlepoints[i][j][1] - circlepoints[i-1][j][1])**2 < circlepoints[i-1].radius**2:
-                        circlepoints[i].remove(circlepoints[i][j])
-                for j in range(len(circlepoints[i-1])): #and vice versa
-                    if (circlepoints[i-1][j][0] - circlepoints[i][j][0])**2 + (circlepoints[i-1][j][1] - circlepoints[i][j][1])**2 < circlepoints[i].radius**2:
-                        circlepoints[i-1].remove(circlepoints[i-1][j])
+            for j in range(numPoints): # Find all points on perimeter of circle within circle resolution
+                points.append((circ[i].center[0]+circ[i].radius*math.cos(2*math.pi/numPoints*j), 
+                               circ[i].center[1]+circ[i].radius*math.sin(2*math.pi/numPoints*j)))
+                curAngle += angleInterval
                 
+            print angleInterval
+            cp.append(points) # Add points to total list of circle points; each circle has its own list
+            
+            # This should remove the points in the union of the current and previous circles.
+            # I am doing this to prevent looking at points that are not on the perimeter of a compound shape
+            
+            toRemove = list() #list of points to remove
+            
+            if i>0: # If this is not the first circle...
+                
+                for f in range(len(cp[i])-1): # for each point in this circle...
+                    print f, len(cp[i])
+                
+                for f in range(len(cp[i])-1): # for each point in this circle...
+                    print f, range(len(cp[i]))[f]
                     
+                    if f > len(cp[i])-1:
+                        print range(len(cp[i-1])), i-1
+                        print range(len(cp[i])-1), i, len(cp[i])-1
+                        print 'hold'
+                        
+                    for p in range(len(cp[i-1])): # check to see if it is in the prev circle
+                        if (cp[i][f][0] - 
+                            cp[i-1][p][0])**2 + (cp[i][f][1] - cp[i-1][p][1])**2 < circ[i-1].radius**2:
+                            toRemove.append(cp[i][f]) # Add point to removal list
+                
+                cp[i] = [x for x in cp[i] if x not in toRemove] # remove points
+                
+                toRemove = list()
+                
+                for k in range(len(cp[i-1])-1): # and vice versa
+                    for p in range(len(cp[i])): # Other has to check each point in the current circle
+                        if (cp[i-1][k][0] - cp[i][p][0])**2 + (cp[i-1][k][1] - cp[i][p][1])**2 < circ[i].radius**2:
+                            toRemove.append(cp[i-1][k]) # Add point to removal list
+#                if len(toRemove) != 0:
+#                    cp[i-1].remove(toRemove) # remove points
+                
+                cp[i-1] = [x for x in cp[i-1] if x not in toRemove] # remove points
+                
+        for circle in cp:
+            xy.append(np.array(zip(*circle)))
+        
+        return xy       
         #______________in Progress______________
 #    def contains():
 #        if self.box.hd > 1 and self.radius < math.sqrt((circcenter[0]-center[0])**2+(circcenter[1]-center[1])**2):
