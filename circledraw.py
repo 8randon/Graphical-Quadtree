@@ -15,9 +15,8 @@ Current state: adds circles
 
 from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator
-from Quadtree import Node
-#import numpy as np
-#from graphics import *
+from Quadtree import Points
+
 
 class CircleDrawer:
     def __init__(self, fig, ax):
@@ -30,16 +29,28 @@ class CircleDrawer:
     def __call__(self, event):
         
         print('click', event)
-        circle = plt.Circle((event.xdata, event.ydata), 10, color='r', fill=False)
+        circle = plt.Circle((event.xdata, event.ydata), 5, color='r', fill=False)
         self.circles.append(circle)
-        n = Node(root=True)
-        
+        n = Points(root=True)
+        self.ax.clear()
         self.points.append(n.calcPoints(self.circles))
+        print len(self.points)
         
-        for points in self.points:
+        for points in self.points[len(self.points)-1]:
+#            for point in points:
             plt.plot(points[0], points[1], 'bo')
             
-        self. ax.add_patch(circle)
+        ax.set_xlim([-40, 40])
+        ax.set_ylim([-40, 40])
+        ax.set_aspect('equal')
+        plt.grid()
+        ax.xaxis.set_major_locator(MultipleLocator(1))
+        ax.yaxis.set_major_locator(MultipleLocator(1))    
+        
+        
+        for circle in self.circles:
+            self.ax.add_patch(circle)
+            
         self.fig.canvas.draw()
         
     def Circles(self):
@@ -60,35 +71,7 @@ ax.set_aspect('equal')
 plt.grid()
 ax.xaxis.set_major_locator(MultipleLocator(1))
 ax.yaxis.set_major_locator(MultipleLocator(1))
-#linebuilder = LineBuilder(line)
 circledrawer = CircleDrawer(fig,ax)
 cid = fig.canvas.mpl_connect('button_press_event', onclick)
-
-#n = Node(root=True)
-#
-#circledrawer.Add(plt.Circle((20, 20), 20, color='r', fill=False))
-#circledrawer.Add(plt.Circle((10, 10), 20, color='b', fill=False))
-#
-#if len(circledrawer.Circles()) > 0:
-#    a = n.calcPoints(circledrawer.Circles())
-#    
-#    for points in a:
-#        plt.plot(points[0], points[1], 'bo')
-#_______________TEST_______________
-#print('click test')
-#circles = list()
-#circles.append(plt.Circle((20, 20), 5, color='r', fill=False))
-#circles.append(plt.Circle((10, 10), 5, color='b', fill=False))
-#
-#n = Node(circleres = 1, root=True)
-#
-#for cir in circles:
-#    ax.add_patch(cir)
-#    
-#fig.canvas.draw()
-#a = n.calcPoints(circles)
-#for points in a:
-#    plt.plot(points[0], points[1], 'ro')
-#_______________^^^^_______________
 
 plt.show()
