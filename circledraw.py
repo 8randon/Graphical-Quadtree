@@ -28,11 +28,17 @@ class CircleDrawer:
         self.points = list()
     
     def __call__(self, event):
+        
         print('click', event)
         circle = plt.Circle((event.xdata, event.ydata), 10, color='r', fill=False)
         self.circles.append(circle)
+        n = Node(root=True)
         
         self.points.append(n.calcPoints(self.circles))
+        
+        for points in self.points:
+            plt.plot(points[0], points[1], 'bo')
+            
         self. ax.add_patch(circle)
         self.fig.canvas.draw()
         
@@ -58,16 +64,16 @@ ax.yaxis.set_major_locator(MultipleLocator(1))
 circledrawer = CircleDrawer(fig,ax)
 cid = fig.canvas.mpl_connect('button_press_event', onclick)
 
-n = Node(root=True)
-
-circledrawer.Add(plt.Circle((20, 20), 5, color='r', fill=False))
-circledrawer.Add(plt.Circle((10, 10), 5, color='b', fill=False))
-
-if len(circledrawer.Circles()) > 0:
-    a = n.calcPoints(circledrawer.Circles())
-    
-    for points in a:
-        plt.plot(points[0], points[1], 'bo')
+#n = Node(root=True)
+#
+#circledrawer.Add(plt.Circle((20, 20), 20, color='r', fill=False))
+#circledrawer.Add(plt.Circle((10, 10), 20, color='b', fill=False))
+#
+#if len(circledrawer.Circles()) > 0:
+#    a = n.calcPoints(circledrawer.Circles())
+#    
+#    for points in a:
+#        plt.plot(points[0], points[1], 'bo')
 #_______________TEST_______________
 #print('click test')
 #circles = list()

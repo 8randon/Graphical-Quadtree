@@ -96,37 +96,60 @@ class Node:
             # I am doing this to prevent looking at points that are not on the perimeter of a compound shape
             
             toRemove = list() #list of points to remove
-            
-            if i>0: # If this is not the first circle...
-                
-                for f in range(len(cp[i])-1): # for each point in this circle...
-                    print f, len(cp[i])
-                
-                for f in range(len(cp[i])-1): # for each point in this circle...
-                    print f, range(len(cp[i]))[f]
+            tempPointList = list()
+#            if i>0: # If this is not the first circle...
+#                
+#                for f in range(len(cp[i])-1): # for each point in this circle...
+#                    print f, len(cp[i])
+#                
+#                for f in range(len(cp[i])-1): # for each point in this circle...
+#                    print f, range(len(cp[i]))[f]
+#                    
+#                    if f > len(cp[i])-1:
+#                        print range(len(cp[i-1])), i-1
+#                        print range(len(cp[i])-1), i, len(cp[i])-1
+#                        print 'hold'
+#                        
+#                    for p in range(len(cp[i-1])): # check to see if it is in the prev circle
+#                        if (cp[i][f][0] - cp[i-1][p][0])**2 + (cp[i][f][1] - cp[i-1][p][1])**2 < circ[i-1].radius**2:
+#                            toRemoveCur.append(cp[i][f]) # Add point to removal list 
+#                
+#                for k in range(len(cp[i-1])-1): # and vice versa
+#                    for p in range(len(cp[i])): # Other has to check each point in the current circle
+#                        if (cp[i-1][k][0] - cp[i][p][0])**2 + (cp[i-1][k][1] - cp[i][p][1])**2 < circ[i].radius**2:
+#                            toRemovePrev.append(cp[i-1][k]) # Add point to removal list
+##                if len(toRemove) != 0:
+##                    cp[i-1].remove(toRemove) # remove points
+#                
+#                cp[i] = [x for x in cp[i] if x not in toRemoveCur] # remove points from current circle
+#                cp[i-1] = [x for x in cp[i-1] if x not in toRemovePrev] # remove points from previous circle
+        for i in range(len(cp)): # Now that we have all the points; i is the index of the current circle...
+            tempPointList = list()        
+            for f in range(len(cp[i])): # For each point in this circle; f is the index of the current point...
+                print f, range(len(cp[i]))[f]
+                            
+                for c in range(len(cp)): # Check to see if it's points lie in other circles; c is the index of another circle
                     
-                    if f > len(cp[i])-1:
-                        print range(len(cp[i-1])), i-1
-                        print range(len(cp[i])-1), i, len(cp[i])-1
-                        print 'hold'
-                        
-                    for p in range(len(cp[i-1])): # check to see if it is in the prev circle
-                        if (cp[i][f][0] - 
-                            cp[i-1][p][0])**2 + (cp[i][f][1] - cp[i-1][p][1])**2 < circ[i-1].radius**2:
-                            toRemove.append(cp[i][f]) # Add point to removal list
-                
-                cp[i] = [x for x in cp[i] if x not in toRemove] # remove points
-                
-                toRemove = list()
-                
-                for k in range(len(cp[i-1])-1): # and vice versa
-                    for p in range(len(cp[i])): # Other has to check each point in the current circle
-                        if (cp[i-1][k][0] - cp[i][p][0])**2 + (cp[i-1][k][1] - cp[i][p][1])**2 < circ[i].radius**2:
-                            toRemove.append(cp[i-1][k]) # Add point to removal list
-#                if len(toRemove) != 0:
-#                    cp[i-1].remove(toRemove) # remove points
-                
-                cp[i-1] = [x for x in cp[i-1] if x not in toRemove] # remove points
+                    if c!=i and (cp[i][f][0] - circ[c].center[0])**2 + (cp[i][f][1] - circ[c].center[1])**2 < circ[c].radius**2:
+#                        a = toRemove[c]
+#                        a = cp[i]
+#                        a = cp[i][f]
+                       tempPointList.append(cp[i][f]) # Add point to removal list
+                       
+            # Now we should have a list of points in this circle that are in other circles...
+            
+            toRemove.append(tempPointList)        
+#                for k in range(len(cp[i-1])-1):
+#                    for c in range(len(cp)): # See if points in other circles 
+#                        if (cp[c][k][0] - cp[c].center[0])**2 + (cp[i-1][k][1] - cp[c].center[1])**2 < circ[c].radius**2:
+#                            toRemovePrev.append(cp[i-1][k]) # Add point to removal list
+    #                if len(toRemove) != 0:
+    #                    cp[i-1].remove(toRemove) # remove points
+        # Now we can go through the the list of points to remove
+        for remove in range(len(toRemove)):# remove is the index of the list of points we want to remove; should be the same index as the corresponding circle    
+                temp = [x for x in cp[remove] if x not in toRemove[remove]] # remove points from current circle
+                cp[remove] = temp
+#                cp[i-1] = [x for x in cp[i-1] if x not in toRemovePrev] # remove points from previous circle
                 
         for circle in cp:
             xy.append(np.array(zip(*circle)))
