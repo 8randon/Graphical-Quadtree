@@ -122,5 +122,17 @@ class Points:
         for circle in cp:
             xy.append(np.array(zip(*circle)))
             
-        return xy       
-        
+        return xy 
+      
+class Node:
+    
+    def __init__(self, center=None, dimension=None):
+        if center==None:
+            self.center=None
+        else:
+            self.center = center
+        self.nw = None
+        self.ne = None
+        self.sw = None
+        self.se = None
+        self.box = AABB(self.center, (self.dimension/2))
